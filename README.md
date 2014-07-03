@@ -40,5 +40,4 @@ You may need to install various perl modules. I'm running on CENTOS 5. Centos RP
 
 Thoughts / Comments welcome.
 
--William
--Sonic.net
+William - Sonic.net
