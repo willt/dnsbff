@@ -130,11 +130,8 @@ sub process_packet {
             $dns = Net::DNS::Packet->new( \$tcp_obj->{data} );
         }
 
-        # don't have a valid dns packet
+    # don't have a valid dns packet
 	return if !$dns;
-        #unless ($dns) {
-        #    return;
-        #}
 
 	my $client_ip = $rec->{dst_ip};
         my $header = $dns->header;
@@ -142,10 +139,6 @@ sub process_packet {
 
 	# We only want SERVFAILS
 	return if $rcode ne "SERVFAIL";
-#	unless ($rcode eq "SERVFAIL")
-#	{
-#	    return;
-#	}
 
         my ($question) = $dns->question;
 	return if !$question;
@@ -155,34 +148,32 @@ sub process_packet {
         my $class = $question->qclass;
 
         #if ( ($type eq "A") and ($rcode eq "SERVFAIL") )
-	# only care about A records
-        if ($type eq "A") 
-        {
+  	    # only care about A records
+        if ( $type eq "A" ) {
             my $ndots;
             ++$ndots while $name =~ m{\.}g;
-            if ( $ndots && $ndots >= $MINDOTS) 
-            {
+            if ( $ndots && $ndots >= $MINDOTS ) {
                 my $domain = lc $name;
-		return if $domain =~ m/$WHITE_DOMAIN/;
+                return if $domain =~ m/$WHITE_DOMAIN/;
 
-                my @comp = split(/\./, $domain);
-                my @host = split(/\./,$name);
-                splice(@host, -3);
+                my @comp = split( /\./, $domain );
+                my @host = split( /\./, $name );
+                splice( @host, -3 );
                 my $host = join q{.}, @host;
+
                 # host must be at least 7 characters and not more then 12
-	        # must also be lowercase!
-                if ( $host =~ m/^[a-z]{7,}$/ && $host !~ m/^[a-z]{12,}$/) {
-                   logger("Adding $name to cache");
+                # must also be lowercase!
+                if ( $host =~ m/^[a-z]{7,}$/ && $host !~ m/^[a-z]{12,}$/ ) {
+                    logger("Adding $name to cache");
                     shift @comp if @comp > 2;
                     my $short = join q{.}, @comp;
-                    my ($secs,$usec) = gettimeofday;
+                    my ( $secs, $usec ) = gettimeofday;
 
-		    # update domain age
-                    $cache->{$short}{age} = "$secs.$usec"; 
+                    # update domain age
+                    $cache->{$short}{age} = "$secs.$usec";
 
-		    # Only increment domain counter if host is new
-		    if (!exists($cache->{$short}{host}{$host}))
-		    {
+                    # Only increment domain counter if host is new
+                    if ( !exists( $cache->{$short}{host}{$host} ) ) {
                         ++$cache->{$short}{count};
                     }
                     ++$cache->{$short}{host}{$host}{count};
