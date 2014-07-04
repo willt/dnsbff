@@ -161,9 +161,9 @@ sub process_packet {
                 splice( @host, -3 );
                 my $host = join q{.}, @host;
 
-                # host must be at least 7 characters and not more then 12
+                # host must be at least 7 characters and not more then 15
                 # must also be lowercase!
-                if ( $host =~ m/^[a-z]{7,}$/ && $host !~ m/^[a-z]{12,}$/ ) {
+                if ( $host =~ m/^[a-z]{7,}$/ && $host !~ m/^[a-z]{15,}$/ ) {
                     logger("Adding $name to cache");
                     shift @comp if @comp > 2;
                     my $short = join q{.}, @comp;
